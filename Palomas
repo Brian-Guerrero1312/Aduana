@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aduana</title>
+<style>
+:root{--brand:#FF441F;--brand-d:#d93414;--ink:#1c1c1e;--mut:#6b7280;--line:#e5e7eb;--bg:#f5f5f7;--card:#fff;
+--ok:#16a34a;--okbg:#dcfce7;--warn:#d97706;--warnbg:#fef3c7;--bad:#dc2626;--badbg:#fee2e2;--info:#2563eb;--infobg:#dbeafe}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+button{font:inherit;cursor:pointer}
+.top{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.top h1{font-size:17px;margin:0;flex:1}
+.top button{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:8px;padding:6px 10px}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600;width:100%}
+.btn:hover{background:var(--brand-d)}
+.btn:disabled{background:#d1d5db;color:#6b7280;cursor:not-allowed}
+.btn.sec{background:#fff;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.gray{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.sm{width:auto;padding:8px 12px;font-size:13px}
+input[type=text],input[type=password],input[type=number],input[type=search]{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+input:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:13px;color:var(--mut)}
+.login{max-width:360px;margin:12vh auto 0;padding:0 16px}
+.login h2{text-align:center;margin-bottom:4px}
+.err{background:var(--badbg);color:var(--bad);padding:10px;border-radius:8px;margin-top:10px;font-size:14px}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-warn{background:var(--warnbg);color:var(--warn)}
+.b-bad{background:var(--badbg);color:var(--bad)}.b-info{background:var(--infobg);color:var(--info)}.b-gray{background:#e5e7eb;color:#4b5563}
+.row{display:flex;gap:10px;align-items:center}.grow{flex:1;min-width:0}
+.mut{color:var(--mut);font-size:13px}
+.tr{cursor:pointer}.tr.lock{opacity:.55;cursor:not-allowed}
+.tr .name{font-weight:700;font-size:16px}
+.bar{height:6px;background:#e5e7eb;border-radius:9px;overflow:hidden;margin-top:8px}.bar>i{display:block;height:100%;background:var(--brand)}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:10px 0;padding-bottom:2px}
+.tab{flex:1;min-width:max-content;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center;font-size:13px;font-weight:600;color:var(--mut)}
+.tab.on{border-color:var(--brand);color:var(--brand);background:#fff4f1}
+.tab b{display:block;font-size:17px;color:var(--ink)}
+.stg{display:flex;gap:6px;margin-bottom:10px}
+.stg .tab{padding:10px}
+.item{cursor:pointer}
+.item .nm{font-weight:600}
+.diffchip{font-weight:700;font-size:13px}
+.d-neg{color:var(--bad)}.d-pos{color:var(--warn)}.d-ok{color:var(--ok)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:18px}}
+.pimg{width:100%;height:210px;object-fit:contain;background:#f3f4f6;border-radius:12px}
+.noimg{height:120px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;border-radius:12px;color:var(--mut)}
+.res{padding:14px;border-radius:12px;font-weight:700;text-align:center;margin:12px 0;font-size:17px}
+.res.ok{background:var(--okbg);color:var(--ok)}.res.neg{background:var(--badbg);color:var(--bad)}.res.pos{background:var(--warnbg);color:var(--warn)}
+.big{font-size:26px;font-weight:700;text-align:center}
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px;z-index:6}
+.foot .in{max-width:760px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:#f9fafb;border-radius:10px;padding:10px;text-align:center}.kpi b{font-size:20px;display:block}
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:10px;z-index:50;font-size:14px;max-width:90%}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.spin{text-align:center;color:var(--mut);padding:30px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var S = { token:null, user:null, etapa:null, trs:[], data:null, tab:'POR_CONTAR', q:'', view:'login', busy:false };
+var app = document.getElementById('app');
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function api(fn){
+  var args=[].slice.call(arguments,1);
+  return new Promise(function(res,rej){
+    var r=google.script.run.withSuccessHandler(res).withFailureHandler(function(e){rej(e)});
+    r[fn].apply(r,args);
+  });
+}
+function msg(e){var m=(e&&e.message)||String(e);return m.replace(/^Error:\s*/,'')}
+function fail(e){
+  if(msg(e).indexOf('SESION')>=0){S.token=null;try{localStorage.removeItem('aduana_tk')}catch(x){};toast('Tu sesión expiró. Inicia sesión de nuevo.');go('login');return}
+  toast(msg(e));
+}
+function toast(t){var d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},3500)}
+function stageName(e){return e==='ADUANA'?'Aduana':'Auditoría'}
+function go(v){S.view=v;render()}
+
+/* ---------- Render principal ---------- */
+function render(){
+  if(S.view==='login')return renderLogin();
+  if(S.view==='trs')return renderTRs();
+  if(S.view==='tr')return renderTR();
+  if(S.view==='resumen')return renderResumen();
+}
+
+function header(title,back){
+  return '<div class="top">'+(back?'<button onclick="'+back+'">←</button>':'')+'<h1>'+esc(title)+'</h1>'+
+    (S.user?'<span style="font-size:12px;opacity:.9">'+esc(S.user.nombre)+'</span><button onclick="doLogout()">Salir</button>':'')+'</div>';
+}
+
+/* ---------- Login ---------- */
+function renderLogin(){
+  app.innerHTML='<div class="login"><h2>Aduana</h2><p class="mut" style="text-align:center;margin-top:0">Inicia sesión para continuar</p>'+
+  '<div class="card"><label>Usuario</label><input type="text" id="u" autocapitalize="off" autocomplete="username">'+
+  '<label>PIN</label><input type="password" id="p" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')doLogin()">'+
+  '<div id="lerr"></div><div style="height:12px"></div><button class="btn" id="lb" onclick="doLogin()">Entrar</button></div></div>';
+}
+function doLogin(){
+  var u=document.getElementById('u').value,p=document.getElementById('p').value,b=document.getElementById('lb');
+  b.disabled=true;b.textContent='Entrando…';
+  api('login',u,p).then(function(r){
+    S.token=r.token;S.user=r;S.etapa=r.etapas[0];
+    try{localStorage.setItem('aduana_tk',JSON.stringify({t:r.token,u:r}))}catch(x){}
+    loadTRs();
+  }).catch(function(e){
+    document.getElementById('lerr').innerHTML='<div class="err">'+esc(msg(e))+'</div>';
+    b.disabled=false;b.textContent='Entrar';
+  });
+}
+function doLogout(){api('logout',S.token).catch(function(){});S.token=null;S.user=null;try{localStorage.removeItem('aduana_tk')}catch(x){};go('login')}
+
+/* ---------- Lista de TRs ---------- */
+function loadTRs(){
+  S.view='trs';app.innerHTML=header('Aduana')+'<div class="wrap"><div class="spin">Cargando TRs…</div></div>';
+  api('listarTRs',S.token,S.etapa).then(function(r){S.trs=r;render()}).catch(fail);
+}
+var TR_BADGE={PENDIENTE:['b-gray','Por iniciar'],EN_PROCESO:['b-info','En proceso'],CERRADA:['b-ok','Cerrada'],BLOQUEADA:['b-warn','Esperando aduana']};
+function renderTRs(){
+  var h=header('TRs por '+stageName(S.etapa).toLowerCase());
+  h+='<div class="wrap">';
+  if(S.user.etapas.length>1){
+    h+='<div class="stg">'+S.user.etapas.map(function(e){return '<button class="tab '+(e===S.etapa?'on':'')+'" onclick="setEtapa(\''+e+'\')">'+stageName(e)+'</button>'}).join('')+'</div>';
+  }
+  h+='<input type="search" placeholder="Buscar tienda, TR o sync id…" value="'+esc(S.qtr||'')+'" oninput="S.qtr=this.value;renderTRList()" style="margin-bottom:10px">';
+  h+='<div id="trlist"></div></div>';
+  app.innerHTML=h;renderTRList();
+}
+function setEtapa(e){S.etapa=e;loadTRs()}
+function renderTRList(){
+  var q=(S.qtr||'').toLowerCase(),el=document.getElementById('trlist');if(!el)return;
+  var list=S.trs.filter(function(t){return !q||(t.tienda+' '+t.tr+' '+t.syncId).toLowerCase().indexOf(q)>=0});
+  if(!list.length){el.innerHTML='<div class="card mut" style="text-align:center">No hay TRs para mostrar.</div>';return}
+  el.innerHTML=list.map(function(t){
+    var b=TR_BADGE[t.estado]||TR_BADGE.PENDIENTE,lock=t.estado==='BLOQUEADA',pct=t.skus?Math.round(t.contados/t.skus*100):0;
+    return '<div class="card tr '+(lock?'lock':'')+'" '+(lock?'':'onclick="openTR(\''+esc(t.tr)+'\')"')+'>'+
+      '<div class="row"><div class="grow"><div class="name">'+esc(t.tienda)+'</div><div class="mut">'+esc(t.tr)+' · '+esc(t.syncId)+'</div></div><span class="badge '+b[0]+'">'+b[1]+'</span></div>'+
+      '<div class="mut" style="margin-top:6px">'+t.skus+' productos'+(t.piezas!=null?' · '+t.piezas+' pzas':'')+(t.estado==='EN_PROCESO'?' · '+t.contados+'/'+t.skus+' contados':'')+'</div>'+
+      (t.estado==='EN_PROCESO'?'<div class="bar"><i style="width:'+pct+'%"></i></div>':'')+'</div>';
+  }).join('');
+}
+
+/* ---------- Detalle de TR ---------- */
+function openTR(tr){
+  app.innerHTML=header('Cargando…')+'<div class="wrap"><div class="spin">Abriendo '+esc(tr)+'…</div></div>';
+  api('abrirTR',S.token,tr,S.etapa).then(function(d){S.data=d;S.tab='POR_CONTAR';S.q='';go('tr')}).catch(function(e){fail(e);loadTRs()});
+}
+var TABS=[['POR_CONTAR','Por contar'],['PENDIENTE','Pendientes'],['CON_DIFERENCIAS','Con diferencias'],['COMPLETADO','Completados']];
+
+function renderTR(){
+  var d=S.data;
+  var h=header(d.tienda,'loadTRs()')+'<div class="wrap">';
+  h+='<div class="mut">'+esc(d.tr)+' · '+esc(d.syncId)+' · '+stageName(d.etapa)+(d.estado==='CERRADA'?' · <span class="badge b-ok">Cerrada</span>':'')+'</div>';
+  h+='<div class="tabs">'+TABS.map(function(t){return '<button class="tab '+(S.tab===t[0]?'on':'')+'" onclick="S.tab=\''+t[0]+'\';renderTR()"><b>'+d.counts[t[0]]+'</b>'+t[1]+'</button>'}).join('')+'</div>';
+  h+='<input type="search" placeholder="Buscar nombre o EAN…" value="'+esc(S.q)+'" oninput="S.q=this.value;renderItems()" style="margin-bottom:10px">';
+  h+='<div id="items"></div>';
+  if(d.kpi)h+=kpiHtml(d.kpi);
+  h+='</div>';
+  h+=footer();
+  app.innerHTML=h;renderItems();
+}
+function footer(){
+  var d=S.data;
+  if(d.estado==='CERRADA')return '';
+  var allCounted=d.counts.POR_CONTAR===0;
+  return '<div class="foot"><div class="in"><div class="row">'+
+    '<button class="btn sec" style="flex:1" '+(allCounted?'':'disabled')+' onclick="go(\'resumen\')">Resumen'+((d.counts.CON_DIFERENCIAS+d.counts.PENDIENTE)?' ('+(d.counts.CON_DIFERENCIAS+d.counts.PENDIENTE)+')':'')+'</button>'+
+    '<button class="btn" style="flex:1" '+(d.puedeCerrar?'':'disabled')+' onclick="doFinalizar()">Finalizar '+stageName(d.etapa).toLowerCase()+'</button></div>'+
+    (!d.puedeCerrar?'<div class="mut" style="margin-top:6px;text-align:center">'+esc(d.motivo)+'</div>':'')+'</div></div>';
+}
+function diffChip(it){
+  if(it.diff===null)return '';
+  if(it.diff===0)return '<span class="diffchip d-ok">Cuadra</span>';
+  return it.diff<0?'<span class="diffchip d-neg">Faltan '+(-it.diff)+'</span>':'<span class="diffchip d-pos">Sobran '+it.diff+'</span>';
+}
+function renderItems(){
+  var d=S.data,q=S.q.toLowerCase(),el=document.getElementById('items');if(!el)return;
+  var list=d.items.filter(function(i){return i.estado===S.tab&&(!q||(i.nombre+' '+i.ean).toLowerCase().indexOf(q)>=0)});
+  if(!list.length){el.innerHTML='<div class="card mut" style="text-align:center">Sin productos en esta sección.</div>';return}
+  el.innerHTML=list.map(function(i){
+    var extra='';
+    if(i.estado==='PENDIENTE')extra='<span class="badge b-info">Repo. solicitada: '+i.reposSolicitada+'</span> ';
+    if(i.aceptada)extra='<span class="badge b-gray">'+(i.resolucion==='SIN_REPOSICION'?'Sin reposición':'Sobrante confirmado')+'</span> ';
+    return '<div class="card item" onclick="openItem(\''+i.ean+'\')"><div class="row"><div class="grow"><div class="nm">'+esc(i.nombre)+'</div>'+
+      '<div class="mut">EAN '+esc(i.ean)+' · '+esc(i.categoria)+'</div></div><div style="text-align:right">'+
+      (i.contada!==null?'<div class="big" style="font-size:20px">'+i.contada+'</div>':'')+diffChip(i)+'</div></div>'+(extra?'<div style="margin-top:6px">'+extra+'</div>':'')+'</div>';
+  }).join('');
+}
+
+/* ---------- Modal de producto ---------- */
+function openItem(ean,keepResult){
+  var it=S.data.items.filter(function(i){return i.ean===ean})[0];if(!it)return;
+  var closed=S.data.estado==='CERRADA';
+  var m=document.getElementById('modal');if(!m){m=document.createElement('div');m.id='modal';m.className='modal';m.onclick=function(e){if(e.target===m)closeModal()};document.body.appendChild(m)}
+  var h='<div class="sheet">';
+  h+=it.imagen?'<img class="pimg" src="'+esc(it.imagen)+'" onerror="this.outerHTML=\'<div class=noimg>Sin imagen</div>\'">':'<div class="noimg">Sin imagen</div>';
+  h+='<div style="margin-top:12px"><div style="font-size:18px;font-weight:700">'+esc(it.nombre)+'</div><div class="mut">EAN '+esc(it.ean)+' · '+esc(it.categoria)+'</div></div>';
+  if(it.contada!==null){
+    h+='<div class="kpis" style="margin-top:10px"><div class="kpi"><b>'+it.contada+'</b>Contadas</div><div class="kpi"><b>'+it.esperada+'</b>Esperadas</div></div>';
+    h+=resultHtml(it);
+  }
+  if(!closed){
+    if(it.contada===null){
+      h+='<label>Piezas aduanadas (si no lo encuentras, captura 0)</label><input type="number" id="qty" inputmode="numeric" min="0" step="1" placeholder="0" onkeydown="if(event.key===\'Enter\')saveItem(\''+it.ean+'\',\'SET\')">';
+      h+='<div style="height:12px"></div><button class="btn" id="sv" onclick="saveItem(\''+it.ean+'\',\'SET\')">Registrar</button>';
+    }else{
+      h+='<label>Sumar piezas que llegaron después</label><div class="row"><input type="number" id="qty" inputmode="numeric" min="0" step="1" placeholder="0" onkeydown="if(event.key===\'Enter\')saveItem(\''+it.ean+'\',\'ADD\')"><button class="btn sm" id="sv" style="white-space:nowrap" onclick="saveItem(\''+it.ean+'\',\'ADD\')">+ Sumar</button></div>';
+      h+='<details style="margin-top:12px"><summary class="mut">Corregir conteo total</summary><div class="row" style="margin-top:8px"><input type="number" id="qty2" inputmode="numeric" min="0" step="1" placeholder="Total correcto"><button class="btn gray sm" onclick="saveItem(\''+it.ean+'\',\'SET\',true)">Corregir</button></div></details>';
+    }
+  }
+  h+='<div class="row" style="margin-top:12px">';
+  var next=nextPorContar(it.ean);
+  if(it.contada!==null&&next)h+='<button class="btn sec" onclick="openItem(\''+next+'\')">Siguiente por contar →</button>';
+  h+='<button class="btn gray" onclick="closeModal()">Cerrar</button></div></div>';
+  m.innerHTML=h;
+  var q=document.getElementById('qty');if(q&&it.contada===null)setTimeout(function(){q.focus()},50);
+}
+function resultHtml(it){
+  if(it.diff===0)return '<div class="res ok">✓ Cuadra: sin diferencia</div>';
+  if(it.diff<0)return '<div class="res neg">Te faltan '+(-it.diff)+' pieza(s)</div>';
+  return '<div class="res pos">Te sobran '+it.diff+' pieza(s)</div>';
+}
+function nextPorContar(cur){
+  var l=S.data.items.filter(function(i){return i.estado==='POR_CONTAR'&&i.ean!==cur});return l.length?l[0].ean:null;
+}
+function closeModal(){var m=document.getElementById('modal');if(m)m.remove();if(S.view==='tr')renderTR();else if(S.view==='resumen')renderResumen()}
+function saveItem(ean,modo,alt){
+  var inp=document.getElementById(alt?'qty2':'qty');var v=inp.value;
+  if(v===''){toast('Captura una cantidad (0 si no lo encuentras).');inp.focus();return}
+  var b=document.getElementById('sv');if(b)b.disabled=true;
+  var before=S.data.counts.POR_CONTAR;
+  api('registrar',S.token,S.data.tr,S.etapa,ean,Number(v),modo).then(function(d){
+    S.data=d;openItem(ean);
+    if(before>0&&d.counts.POR_CONTAR===0){toast('¡Todo aduanado! Revisa el resumen.');closeModal();go('resumen')}
+  }).catch(function(e){fail(e);if(b)b.disabled=false});
+}
+
+/* ---------- Resumen de diferencias ---------- */
+function renderResumen(){
+  var d=S.data;
+  var dif=d.items.filter(function(i){return i.diff!==null&&i.diff!==0});
+  var h=header('Resumen · '+d.tienda,'go(\'tr\')')+'<div class="wrap">';
+  h+='<div class="mut">'+esc(d.tr)+' · '+stageName(d.etapa)+'</div>';
+  var sinSol=dif.filter(function(i){return i.diff<0&&i.estado==='CON_DIFERENCIAS'});
+  var totalFalt=0;sinSol.forEach(function(i){totalFalt+=-i.diff});
+  h+='<div class="kpis" style="margin:10px 0"><div class="kpi"><b>'+dif.length+'</b>Productos con diferencia</div><div class="kpi"><b>'+totalFalt+'</b>Pzas por solicitar</div></div>';
+  if(d.estado!=='CERRADA'&&sinSol.length)h+='<button class="btn" style="margin-bottom:12px" onclick="solicitar('+JSON.stringify(sinSol.map(function(i){return i.ean})).replace(/"/g,'&quot;')+')">Solicitar reposición de todo ('+totalFalt+' pzas)</button>';
+  if(!dif.length)h+='<div class="card res ok">Sin diferencias 🎉</div>';
+  h+=dif.map(function(i){
+    var open=d.estado!=='CERRADA';
+    var a='',st='';
+    if(i.estado==='PENDIENTE'){
+      st='<span class="badge b-info">Repo. solicitada: '+i.reposSolicitada+(i.reposRecibida?' · recibidas '+i.reposRecibida:'')+'</span>';
+      if(open)a='<button class="btn sm" onclick="openItem(\''+i.ean+'\')">Sumar piezas recibidas</button><button class="btn gray sm" onclick="sinRepo(\''+i.ean+'\')">No hubo reposición</button>';
+    }else if(i.estado==='CON_DIFERENCIAS'){
+      st='<span class="badge b-bad">Sin resolver</span>';
+      if(open&&i.diff<0)a='<button class="btn sm" onclick="solicitar([\''+i.ean+'\'])">Solicitar reposición ('+(-i.diff)+')</button><button class="btn gray sm" onclick="sinRepo(\''+i.ean+'\')">No hubo reposición</button>';
+      if(open&&i.diff>0)a='<button class="btn sm" onclick="sobrante(\''+i.ean+'\')">Confirmar sobrante</button><button class="btn gray sm" onclick="openItem(\''+i.ean+'\')">Recontar</button>';
+    }else{
+      st='<span class="badge b-gray">'+(i.resolucion==='SIN_REPOSICION'?'No hubo reposición · queda en '+i.contada:'Sobrante confirmado')+'</span>';
+      if(open)a='<button class="btn gray sm" onclick="openItem(\''+i.ean+'\')">Modificar</button>';
+    }
+    return '<div class="card"><div class="row"><div class="grow"><div class="nm" style="font-weight:600">'+esc(i.nombre)+'</div><div class="mut">EAN '+esc(i.ean)+' · '+esc(i.categoria)+'</div></div>'+
+      '<div style="text-align:right"><div class="mut">Esp. '+i.esperada+' · Cont. '+i.contada+'</div>'+diffChip(i)+'</div></div><div style="margin-top:6px">'+st+'</div>'+(a?'<div class="acts">'+a+'</div>':'')+'</div>';
+  }).join('');
+  if(d.kpi)h+=kpiHtml(d.kpi);
+  h+='</div>'+footer();
+  app.innerHTML=h;
+}
+function run(p){p.then(function(d){S.data=d;render()}).catch(fail)}
+function solicitar(eans){run(api('solicitarReposicion',S.token,S.data.tr,S.etapa,eans))}
+function sinRepo(ean){if(confirm('¿Confirmas que NO hubo reposición? El producto se queda con la cantidad registrada.'))run(api('sinReposicion',S.token,S.data.tr,S.etapa,ean))}
+function sobrante(ean){run(api('confirmarSobrante',S.token,S.data.tr,S.etapa,ean))}
+
+/* ---------- Finalizar / KPIs ---------- */
+function doFinalizar(){
+  if(!confirm('¿Finalizar '+stageName(S.data.etapa).toLowerCase()+' de '+S.data.tr+'? Ya no podrás modificarla.'))return;
+  api('finalizar',S.token,S.data.tr,S.etapa).then(function(d){
+    S.data=d;toast(stageName(d.etapa)+' cerrada.');go('tr');window.scrollTo(0,document.body.scrollHeight);
+  }).catch(fail);
+}
+function pct(x){return x===''||x==null?'—':Math.round(Number(x)*1000)/10+'%'}
+function kpiHtml(k){
+  return '<div class="card"><div style="font-weight:700;margin-bottom:8px">Eficacia de picking</div><div class="kpis">'+
+    '<div class="kpi"><b>'+pct(k.eficaciaPz)+'</b>Piezas (1er conteo)</div><div class="kpi"><b>'+pct(k.eficaciaSku)+'</b>SKUs exactos</div>'+
+    '<div class="kpi"><b>'+k.pzPrimerConteo+' / '+k.pzEsperadas+'</b>Pzas 1er conteo / esperadas</div><div class="kpi"><b>'+k.reposRec+' / '+k.reposSol+'</b>Repos. recibida / solicitada</div>'+
+    '<div class="kpi"><b>'+k.skusConDif+'</b>SKUs cerrados con diferencia</div><div class="kpi"><b>'+k.sinRepos+'</b>SKUs sin reposición</div></div>'+
+    '<div class="mut" style="margin-top:8px">Cierre: '+esc(k.cierre)+'</div></div>';
+}
+
+/* ---------- Arranque ---------- */
+(function(){
+  try{var s=JSON.parse(localStorage.getItem('aduana_tk')||'null');if(s&&s.t){S.token=s.t;S.user=s.u;S.etapa=s.u.etapas[0];
+    api('listarTRs',S.token,S.etapa).then(function(r){S.trs=r;S.view='trs';render()}).catch(function(){S.token=null;S.user=null;go('login')});return}}catch(x){}
+  go('login');
+})();
+</script>
+</body>
+</html>
